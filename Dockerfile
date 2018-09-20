@@ -15,6 +15,7 @@ RUN \
       gettext \
       ca-certificates \
       nginx \
+      netcat-openbsd \
   && rm -rf /var/lib/apt/lists/* \
   \
   && echo "### Setup system locale" \
@@ -26,7 +27,7 @@ RUN \
   \
   && echo "### Setup nginx access/error log to stdout/stderr" \
   && ln -sf /dev/stdout /var/log/nginx/access.log \
-  && ln -sf /dev/stderr /var/log/nginx/error.log 
+  && ln -sf /dev/stderr /var/log/nginx/error.log
 
 
 ### Copy required taiga files
@@ -73,8 +74,11 @@ ENV \
   TAIGA_EMAIL_PASS="" \
   TAIGA_SKIP_DB_CHECK="" \
   TAIGA_DB_CHECK_ONLY="" \
-  TAIGA_SLEEP="0"
+  TAIGA_MAX_SLEEP="180"
 
+## Install wait-for to wait for db before starting taiga
+RUN wget https://raw.githubusercontent.com/eficode/wait-for/master/wait-for -O /usr/bin/wait-for && \
+    chmod 755 /usr/bin/wait-for
 
 ### Container configuration
 EXPOSE 80 443

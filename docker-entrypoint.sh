@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Sleep when asked to, to allow the database time to start
-# before Taiga tries to run /checkdb.py below.
-: ${TAIGA_SLEEP:=0}
-sleep $TAIGA_SLEEP
+# Wait for database to be available
+echo Waiting for postgres database on $TAIGA_DB_HOST:5432 for $TAIGA_MAX_SLEEP seconds at most
+wait-for $TAIGA_DB_HOST:5432 -t $TAIGA_MAX_SLEEP -- echo Database found. Starting
 
 # Setup database automatically if needed
 if [ -z "$TAIGA_SKIP_DB_CHECK" ]; then
